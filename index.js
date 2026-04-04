@@ -22,6 +22,25 @@ app.get("/products", (req, res) => {
   res.json({ data: final, count: final.length });
 });
 
+app.get("/products/:id", (req, res) => {
+  const { id } = req.params;
+  const product = products.find((p) => p.id === parseInt(id));
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+  res.json({ data: product });
+});
+
+app.post("/create-product", (req, res) => {
+  const { name, price } = req.body || {};
+  if (!name || !price) {  
+    final = products.slice(0, limit);
+  }
+
+  res.json({ data: final, count: final.length });
+});
+
+
 app.post("/create-product", (req, res) => {
   const { name, price } = req.body || {};
   if (!name || !price) {
