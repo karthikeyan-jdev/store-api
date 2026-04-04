@@ -1,52 +1,80 @@
 import express from "express";
-import { products } from "./data/products.js";
+import connectDB from "./config/db.js";
+import Product from "./models/Product.js";
 
 const app = express();
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Connect DB
+connectDB();
+
+// Routes
 app.get("/", (req, res) => {
   res.json({ message: "Hello, World!" });
 });
 
-app.get("/products", (req, res) => {
-  let { limit } = req.query;
-  let final = products;
-
-  if (limit) {
-    limit = parseInt(limit);
-    final = products.slice(0, limit);
-  }
-
-  res.json({ data: final, count: final.length });
+app.post("/products", async (req, res) => {
+  const product = await Product.create(req.body);
+  res.json(product);
 });
 
-app.get("/products/:id", (req, res) => {
-  const { id } = req.params;
-  const product = products.find((p) => p.id === parseInt(id));
-  if (!product) {
-    return res.status(404).json({ error: "Product not found" });
-  }
-  res.json({ data: product });
+// ✅ READ ALL
+app.get("/products", async (req, res) => {
+  const products = await Product.find();
+  res.json(products);
 });
 
-app.post("/create-product", (req, res) => {
-  const { name, price } = req.body || {};
-  if (!name || !price) {  
-    final = products.slice(0, limit);
-  }
-
-  res.json({ data: final, count: final.length });
+// ✅ READ ONE
+app.get("/products/:id", async (req, res) => {
+  const product = await Product.findById(req.params.id);
+  res.json(product);
 });
 
+// ✅ UPDATE
+app.put("/products/:id", async (req, res) => {
+  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.json(product);
+});
 
-app.post("/create-product", (req, res) => {
-  const { name, price } = req.body || {};
-  if (!name || !price) {
-    return res.status(400).json({ error: "Name and price are required" });
+// ✅ DELETE
+app.delete("/products/:id", async (req, res) => {
+  await Product.findByIdAndDelete(req.params.id);
+  res.json({ message: "Deleted" });
+});
+
+// ✅ CREATE
+app.post("/products", async (req, res) => {
+  try {
+    const { title, description, category, price, rating, stock } = req.body;
+
+    // simple validation
+    if (!title || !price) {
+      return res.status(400).json({
+        message: "Title and price are required",
+      });
+    }
+
+    const product = await Product.create({
+      title,
+      description,
+      category,
+      price,
+      rating,
+      stock,
+    });
+
+    res.status(201).json({
+      message: "Product created",
+      data: product,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  res.json({ message: "Product created successfully!" });
 });
 
 const PORT = process.env.PORT || 3000;
