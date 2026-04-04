@@ -16,37 +16,6 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello, World!" });
 });
 
-app.post("/products", async (req, res) => {
-  const product = await Product.create(req.body);
-  res.json(product);
-});
-
-// ✅ READ ALL
-app.get("/products", async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
-});
-
-// ✅ READ ONE
-app.get("/products/:id", async (req, res) => {
-  const product = await Product.findById(req.params.id);
-  res.json(product);
-});
-
-// ✅ UPDATE
-app.put("/products/:id", async (req, res) => {
-  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  res.json(product);
-});
-
-// ✅ DELETE
-app.delete("/products/:id", async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
-});
-
 // ✅ CREATE
 app.post("/products", async (req, res) => {
   try {
@@ -75,6 +44,32 @@ app.post("/products", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// ✅ READ ALL
+app.get("/products", async (req, res) => {
+  const products = await Product.find();
+  res.json(products);
+});
+
+// ✅ READ ONE
+app.get("/products/:id", async (req, res) => {
+  const product = await Product.findById(req.params.id);
+  res.json(product);
+});
+
+// ✅ UPDATE
+app.put("/products/:id", async (req, res) => {
+  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.json(product);
+});
+
+// ✅ DELETE
+app.delete("/products/:id", async (req, res) => {
+  await Product.findByIdAndDelete(req.params.id);
+  res.json({ message: "Deleted" });
 });
 
 const PORT = process.env.PORT || 3000;
