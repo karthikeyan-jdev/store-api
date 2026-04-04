@@ -9,7 +9,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Connect DB
-connectDB();
 
 // Routes
 app.get("/", (req, res) => {
@@ -48,6 +47,7 @@ app.post("/products", async (req, res) => {
 
 // ✅ READ ALL
 app.get("/products", async (req, res) => {
+  await connectDB();
   const products = await Product.find();
   res.json(products);
 });
@@ -75,5 +75,6 @@ app.delete("/products/:id", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+  connectDB();
   console.log(`Server is running on port ${PORT}`);
 });
