@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Connect DB
+connectDB();
 
 // Routes
 app.get("/", (req, res) => {
